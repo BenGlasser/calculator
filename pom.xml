@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.benglasser.calculator</groupId>
+  <artifactId>parent</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <name>Ben Glasser :: calculator :: parent</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>Ben Glasser :: calculator :: app</module>
+  </modules>
+
+  <properties>
+  </properties>
+
+  <dependencyManagement>
+  </dependencyManagement>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+  </build>
+
+</project>
