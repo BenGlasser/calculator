@@ -1,6 +1,2 @@
-*.xml
-/target
-
 *.iml
 /.idea
-
