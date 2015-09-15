@@ -12,6 +12,8 @@
 
     <modules>
         <module>app</module>
+        <module>plugin-framework</module>
+        <module>plugins</module>
     </modules>
 
     <properties>
