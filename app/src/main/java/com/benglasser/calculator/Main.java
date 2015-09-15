@@ -1,27 +1,33 @@
 package com.benglasser.calculator;
 
-import com.benglasser.calculator.app.operators.Add;
-import com.benglasser.calculator.app.operators.Divide;
-import com.benglasser.calculator.app.operators.Subtract;
-import com.benglasser.calculator.modules.RestModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.servlet.GuiceFilter;
-import edu.emory.mathcs.backport.java.util.Arrays;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
+import com.benglasser.calculator.modules.RestModule;
+import com.benglasser.calculator.operations.Operation;
+import com.benglasser.calculator.operations.OpreationManager;
+import com.benglasser.calculator.operators.Add;
+import com.benglasser.calculator.operators.Divide;
+import com.benglasser.calculator.operators.Subtract;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceFilter;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Slf4j
 public class Main {
@@ -55,32 +61,20 @@ public class Main {
             switch (command.toLowerCase()) {
                 case "a":
                     numbers = getNumbers("Add");
-                    printResult(add(numbers.get(0), numbers.get(1)));
+                    printResult(new Add().calculate(numbers.get(0), numbers.get(1)));
                     break;
                 case "s":
                     numbers = getNumbers("Subtract");
-                    printResult(subtract(numbers.get(0), numbers.get(1)));
+                    printResult(new Subtract().calculate(numbers.get(0), numbers.get(1)));
                     break;
                 case "d":
                     numbers = getNumbers("Divide");
-                    printResult(divide(numbers.get(0), numbers.get(1)));
+                    printResult(new Divide().calculate(numbers.get(0), numbers.get(1)));
                     break;
                 default:
                     System.out.println("Command not supported");
             }
         }
-    }
-
-    private static int add(int num1, int num2) {
-        return new Add(num1, num2).calculate();
-    }
-
-    private static int subtract(int num1, int num2) {
-        return new Subtract(num1, num2).calculate();
-    }
-
-    private static int divide(int num1, int num2) {
-        return new Divide(num1, num2).calculate();
     }
 
     private static void printResult(int result) {
@@ -117,7 +111,7 @@ public class Main {
     }
 
     protected static Server startServer() throws Exception {
-        Injector injector = Guice.createInjector(new RestModule());
+        Injector injector = Guice.createInjector(new RestModule(loadOperations()));
 
         Server server = new Server(PORT);
 
@@ -132,6 +126,18 @@ public class Main {
         server.join();
 
         return server;
+    }
+
+    private static List<Operation> loadOperations()
+    {
+        OpreationManager manager = new OpreationManager();
+        try {
+            return manager.loadPlugins();
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Failed to load plugins");
+        }
+        return Collections.emptyList();
     }
 
 }
